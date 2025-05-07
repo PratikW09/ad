@@ -1,0 +1,100 @@
+Project name : se7en
+
+maven {url = uri("https://www.jitpack.io")} add this line in settings.gradle file under repositories section
+
+implementation ("com.github.denzcoskun:ImageSlideshow:0.1.0") add this line in buid.gradle(Module:app) file under dependencies section
+===================================================================================================
+
+@@@Manifest
+
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <application
+        android:allowBackup="true"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:fullBackupContent="@xml/backup_rules"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.Se7en"
+        tools:targetApi="31">
+        <activity
+            android:name=".MainActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+    </application>
+
+</manifest>
+
+========================================================================================
+
+@@@MainActivity
+
+
+
+package com.example.se7en;
+
+import android.os.Bundle;
+
+import androidx.activity.EdgeToEdge;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
+
+import com.denzcoskun.imageslider.ImageSlider;
+import com.denzcoskun.imageslider.models.SlideModel;
+
+import java.util.ArrayList;
+
+public class MainActivity extends AppCompatActivity {
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        EdgeToEdge.enable(this);
+        setContentView(R.layout.activity_main);
+
+        ImageSlider slider = findViewById(R.id.slide);
+
+        ArrayList<SlideModel> imageList = new ArrayList<>();
+
+        imageList.add(new SlideModel(R.drawable.one, null));
+        imageList.add(new SlideModel(R.drawable.two, null));
+
+        slider.setImageList(imageList);
+    }
+}
+
+========================================================================================
+
+
+@@@.xml
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+    <com.denzcoskun.imageslider.ImageSlider
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/slide"
+        app:iss_auto_cycle="true"
+        app:iss_period="1000"/>
+</LinearLayout>
+
+
+========================================================================================
+****************************************************************************************

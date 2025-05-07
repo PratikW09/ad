@@ -1,0 +1,315 @@
+package name : ad_3
+
+@@@ Manifest
+<activity android:name=".HomeActivity"/>
+<activity android:name=".SignUpActivity"/>
+
+===================================================================================================
+
+
+@@@ DbHelper.java
+package com.example.ad_3;
+
+import android.content.ContentValues;
+import android.content.Context;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
+
+import androidx.annotation.Nullable;
+
+public class DbHelper extends SQLiteOpenHelper {
+
+    public DbHelper(Context context) {
+        super(context, "users.db", null, 1);
+    }
+
+    @Override
+    public void onCreate(SQLiteDatabase db) {
+        db.execSQL("Create table users(name TEXT PRIMARY KEY, pass TEXT)");
+    }
+
+    @Override
+    public void onUpgrade(SQLiteDatabase db, int i, int i1) {
+        db.execSQL("DROP TABLE IF EXISTS users");
+        onCreate(db);
+    }
+
+    public boolean checkUserName(String username){
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery(
+                "Select * from users where name = ?", new String[]{username});
+        return cursor.getCount() > 0;
+    }
+
+    public boolean checkUserNamePass(String username, String password){
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery(
+                "Select * from users where name = ? and pass = ?", new String[]{username, password});
+        return cursor.getCount() > 0;
+    }
+
+    public boolean insertData(String uname, String pass){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("name", uname);
+        values.put("pass", pass);
+
+        long result = db.insert("users", null, values);
+        return result != -1;
+    }
+}
+
+
+===================================================================================================
+
+
+
+@@@ HomeActivity.java
+
+package com.example.ad_3;
+
+import android.os.Bundle;
+
+import androidx.activity.EdgeToEdge;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
+
+public class HomeActivity extends AppCompatActivity{
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_home);
+    }
+}
+
+
+===================================================================================================
+
+
+
+@@@LoginActivity.java
+
+package com.example.ad_3;
+
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Toast;
+
+import androidx.activity.EdgeToEdge;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
+
+public class LoginActivity extends AppCompatActivity{
+
+    EditText username, pass;
+    Button signin, signup;
+    DbHelper db;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_login);
+
+        db = new DbHelper(this);
+        username = findViewById(R.id.username);
+        pass = findViewById(R.id.pass);
+        signin = findViewById(R.id.btnSignIn);
+        signup = findViewById(R.id.btnSignUp);
+
+        signin.setOnClickListener(v -> {
+            String user = username.getText().toString();
+            String password = pass.getText().toString();
+
+
+            if(user.isEmpty() || password.isEmpty()){
+                Toast.makeText(this, "All field required", Toast.LENGTH_SHORT).show();
+            }else if(db.checkUserNamePass(user, password)){
+                Toast.makeText(this, "Login Successful", Toast.LENGTH_SHORT).show();
+                startActivity(new Intent(this, HomeActivity.class));
+            }else{
+                Toast.makeText(this, "Enter Valid Creds", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        signup.setOnClickListener(v -> {
+            startActivity(new Intent(this, SignUpActivity.class));
+        });
+
+    }
+}
+
+
+===================================================================================================
+
+
+
+@@@SignUpActivity.java
+
+
+package com.example.ad_3;
+
+import android.content.Intent;
+import android.os.Bundle;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Toast;
+
+import androidx.activity.EdgeToEdge;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
+
+public class SignUpActivity extends AppCompatActivity{
+
+    EditText username, pass;
+    Button signup;
+    DbHelper db;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_signup);
+
+        db = new DbHelper(this);
+        username = findViewById(R.id.username);
+        pass = findViewById(R.id.pass);
+        signup = findViewById(R.id.btnSignUp);
+
+        signup.setOnClickListener(v -> {
+            String user = username.getText().toString();
+            String password = pass.getText().toString();
+
+
+            if(user.isEmpty() || password.isEmpty()){
+                Toast.makeText(this, "All field required", Toast.LENGTH_SHORT).show();
+            }else if(db.checkUserName(user)){
+                Toast.makeText(this, "UserName Exist", Toast.LENGTH_SHORT).show();
+            }else{
+                if(db.insertData(user, password)){
+                    Toast.makeText(this, "New User Created", Toast.LENGTH_SHORT).show();
+                    startActivity(new Intent(this, LoginActivity.class));
+                }else{
+                    Toast.makeText(this, "Internal Error occured", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+    }
+}
+
+===================================================================================================
+
+
+
+@@@ activity_home.xml
+
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:orientation="vertical"
+    >
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Hello"
+        android:gravity="center"
+        />
+
+
+
+</LinearLayout>
+
+===================================================================================================
+
+
+@@@ activity_login.xml
+
+
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:orientation="vertical"
+    >
+    <EditText
+        android:id="@+id/username"
+        android:hint="Enter Username"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        />
+    <EditText
+        android:id="@+id/pass"
+        android:hint="Enter Password"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        />
+    <Button
+        android:id="@+id/btnSignIn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="SignIn"
+
+        />
+    <Button
+        android:id="@+id/btnSignUp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="New User? SignUp"
+
+        />
+
+</LinearLayout>
+
+
+===================================================================================================
+
+
+@@@ activity_signup.xml
+
+
+
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:orientation="vertical"
+    >
+    <EditText
+        android:id="@+id/username"
+        android:hint="Enter Username"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+    />
+    <EditText
+        android:id="@+id/pass"
+        android:hint="Enter Password"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+    />
+    <Button
+        android:id="@+id/btnSignUp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="SignUp"
+
+        />
+
+
+
+</LinearLayout>
+
+===================================================================================================
+*****************************************************************************************************

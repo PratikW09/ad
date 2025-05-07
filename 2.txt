@@ -1,0 +1,124 @@
+//MainActivity.java
+
+package com.example.ad_expt2;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
+
+import android.os.Bundle;
+import android.widget.Toast;
+public class MainActivity extends AppCompatActivity {
+    CardView homeCard, settingsCard, notiCard, profileCard;
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        homeCard = findViewById(R.id.home);
+        settingsCard = findViewById(R.id.settings);
+        profileCard = findViewById(R.id.profile);
+        notiCard = findViewById(R.id.notifications);
+
+        homeCard.setOnClickListener(V -> Toast.makeText(this, "HOME clicked", Toast.LENGTH_SHORT).show());
+        settingsCard.setOnClickListener(V -> Toast.makeText(this, "settings clicked", Toast.LENGTH_SHORT).show());
+        profileCard.setOnClickListener(V -> Toast.makeText(this, "profile clicked", Toast.LENGTH_SHORT).show());
+        notiCard.setOnClickListener(V -> Toast.makeText(this, "notifications clicked", Toast.LENGTH_SHORT).show());
+
+
+
+    }
+}
+
+
+<!--activity_main.xml-->
+
+<?xml version="1.0" encoding="utf-8"?>
+
+<GridLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:columnCount="2" >
+
+    <androidx.cardview.widget.CardView
+        android:layout_rowWeight="1"
+        android:layout_columnWeight="1"
+        android:id="@+id/home"
+        >
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:background="#E16464">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="HOME"
+
+                />
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+
+    <androidx.cardview.widget.CardView
+        android:layout_rowWeight="1"
+        android:layout_columnWeight="1"
+        android:id="@+id/settings"
+        >
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:background="#E16464">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="SETTINGS"
+                />
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+
+    <androidx.cardview.widget.CardView
+        android:layout_rowWeight="1"
+        android:layout_columnWeight="1"
+        android:id="@+id/notifications"
+        >
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:background="#E16464">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="NOTIFICATIONS"
+                />
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+
+    <androidx.cardview.widget.CardView
+        android:layout_rowWeight="1"
+        android:layout_columnWeight="1"
+        android:id="@+id/profile"
+        >
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:background="#E16464">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="PROFILE"
+                />
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+
+</GridLayout>
+

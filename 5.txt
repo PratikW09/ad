@@ -1,0 +1,119 @@
+Project name: exp5
+
+@@@ activity_main.xml
+
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp"
+    android:orientation="vertical"
+    android:layout_marginTop="100dp">
+
+    <Button android:id="@+id/btnAlert" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Show Alert Dialog"/>
+    <Button android:id="@+id/btnCustom" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Show Custom Dialog"/>
+    <Button android:id="@+id/btnPopup" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Show Popup Menu"/>
+
+    <TextView android:id="@+id/textContext" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Long press me for Context Menu" android:padding="16dp" android:background="#DDDDDD"/>
+</LinearLayout>
+
+
+@@@ custom_dialog.xml
+
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:padding="20dp"
+    android:orientation="vertical"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+
+    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="This is a custom dialog"/>
+</LinearLayout>
+
+@@@ context_menu.xml, popup_menu.xml, option_menu.xml
+
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/item1" android:title="Item 1" />
+    <item android:id="@+id/item2" android:title="Item 2" />
+</menu>
+
+
+@@@ MainActivity.java
+
+package com.example.exp5;
+
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.os.Bundle;
+import android.view.ContextMenu;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.*;
+import androidx.appcompat.app.AppCompatActivity;
+
+public class MainActivity extends AppCompatActivity {
+
+    Button btnAlert, btnCustom, btnPopup;
+    TextView textContext;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        btnAlert = findViewById(R.id.btnAlert);
+        btnCustom = findViewById(R.id.btnCustom);
+        btnPopup = findViewById(R.id.btnPopup);
+        textContext = findViewById(R.id.textContext);
+
+        registerForContextMenu(textContext);
+
+        btnAlert.setOnClickListener(v -> new AlertDialog.Builder(this)
+                .setTitle("Alert")
+                .setMessage("This is an AlertDialog")
+                .setPositiveButton("OK", null)
+                .setNegativeButton("cancel", null)
+                .show());
+
+        btnCustom.setOnClickListener(v -> {
+            Dialog dialog = new Dialog(this);
+            dialog.setContentView(R.layout.custom_dialog);
+            dialog.show();
+        });
+
+        btnPopup.setOnClickListener(v -> {
+            PopupMenu popup = new PopupMenu(this, v);
+            getMenuInflater().inflate(R.menu.popup_menu, popup.getMenu());
+            popup.setOnMenuItemClickListener(item -> {
+                Toast.makeText(this, "Popup: " + item.getTitle(), Toast.LENGTH_SHORT).show();
+                return true;
+            });
+            popup.show();
+        });
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.option_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        Toast.makeText(this, "Option: " + item.getTitle(), Toast.LENGTH_SHORT).show();
+        return true;
+    }
+
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        getMenuInflater().inflate(R.menu.context_menu, menu);
+    }
+
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        Toast.makeText(this, "Context: " + item.getTitle(), Toast.LENGTH_SHORT).show();
+        return true;
+    }
+}
+

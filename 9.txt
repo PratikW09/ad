@@ -1,0 +1,183 @@
+project name: exp9
+
+@@@ activity_main.xml
+
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center">
+
+    <EditText
+        android:id="@+id/editTextData"
+        android:hint="Enter data"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <Button
+        android:id="@+id/btnSaveInternal"
+        android:text="Save to Internal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <Button
+        android:id="@+id/btnReadInternal"
+        android:text="Read from Internal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <Button
+        android:id="@+id/btnSaveExternal"
+        android:text="Save to External"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <Button
+        android:id="@+id/btnReadExternal"
+        android:text="Read from External"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:id="@+id/textViewOutput"
+        android:paddingTop="10dp"
+        android:text="Output:"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+</LinearLayout>
+
+
+@@@ MainActivity.java
+
+package com.example.exp9;
+
+import android.Manifest;
+import android.content.pm.PackageManager;
+import android.os.Bundle;
+import android.os.Environment;
+import android.widget.*;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import java.io.*;
+
+public class MainActivity extends AppCompatActivity {
+
+    EditText editText;
+    TextView textView;
+    final String filename = "myfile.txt";
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        editText = findViewById(R.id.editTextData);
+        textView = findViewById(R.id.textViewOutput);
+
+        findViewById(R.id.btnSaveInternal).setOnClickListener(v -> saveInternal());
+        findViewById(R.id.btnReadInternal).setOnClickListener(v -> readInternal());
+        findViewById(R.id.btnSaveExternal).setOnClickListener(v -> saveExternal());
+        findViewById(R.id.btnReadExternal).setOnClickListener(v -> readExternal());
+
+//        ActivityCompat.requestPermissions(this,
+//                new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE},
+//                1);
+
+        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
+    }
+
+    private void saveInternal() {
+        try {
+            FileOutputStream fos = openFileOutput(filename, MODE_PRIVATE);
+            fos.write(editText.getText().toString().getBytes());
+            fos.close();
+            Toast.makeText(this, "Saved to internal", Toast.LENGTH_SHORT).show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void readInternal() {
+        try {
+            FileInputStream fis = openFileInput(filename);
+            int c;
+            StringBuilder temp = new StringBuilder();
+            while ((c = fis.read()) != -1) {
+                temp.append((char) c);
+            }
+            fis.close();
+            textView.setText("Internal: " + temp.toString());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    private void saveExternal() {
+        try {
+            File file = new File(getExternalFilesDir(null), "myfile.txt");
+            FileOutputStream fos = new FileOutputStream(file);
+            String text = editText.getText().toString();
+            fos.write(text.getBytes());
+            fos.close();
+            Toast.makeText(this, "Saved to external", Toast.LENGTH_SHORT).show();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    private void readExternal() {
+        try {
+            File file = new File(getExternalFilesDir(null), "myfile.txt");
+            FileInputStream fis = new FileInputStream(file);
+            int c;
+            StringBuilder temp = new StringBuilder();
+            while ((c = fis.read()) != -1) {
+                temp.append((char) c);
+            }
+            fis.close();
+            textView.setText("External: " + temp.toString());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+
+}
+
+
+@@ andoidManifext.xml
+
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+
+    <application
+        android:allowBackup="true"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:fullBackupContent="@xml/backup_rules"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.Exp9"
+        tools:targetApi="31">
+        <activity
+            android:name=".MainActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+    </application>
+
+</manifest>
